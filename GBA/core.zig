@@ -15,6 +15,14 @@ pub const GBA = struct {
     pub const REG_DISPSTAT = @intToPtr(*volatile u16, @ptrToInt(MEM_IO) + 0x0004);
     pub const REG_VCOUNT = @intToPtr(*volatile u16, @ptrToInt(MEM_IO) + 0x0006);
     pub const REG_KEYINPUT = @intToPtr(*volatile u16, @ptrToInt(MEM_IO) + 0x0130);
+    pub const REG_IE = @intToPtr(*volatile u16, @ptrToInt(MEM_IO) + 0x0200);
+    pub const REG_IF = @intToPtr(*volatile u16, @ptrToInt(MEM_IO) + 0x0202);
+    pub const REG_IME = @intToPtr(*volatile u16, @ptrToInt(MEM_IO) + 0x0208);
+    pub const REG_ISR_MAIN = @intToPtr(*volatile fn() callconv(.Naked) void, 0x03007FFC);
+    pub const REG_IF_BIOS = @intToPtr(*volatile u16, 0x3007FF8);
+
+    pub const DSTAT_VBL_IRQ = 0x0008;
+    pub const INT_VBLANK = 0x0001;
 
     pub const MODE4_FRONT_VRAM = VRAM;
     pub const MODE4_BACK_VRAM = @intToPtr([*]align(2) volatile u16, 0x0600A000);
@@ -252,6 +260,31 @@ pub const GBA = struct {
             }
         }
     }
+
+    pub fn registerVBlankISR() void {
+        GBA.REG_IME.* = 0x00;
+        GBA.REG_ISR_MAIN.* = interruptHandler;
+        GBA.REG_DISPSTAT.* |= GBA.DSTAT_VBL_IRQ;
+        GBA.REG_IE.* |= GBA.INT_VBLANK;
+        GBA.REG_IME.* = 0x01;
+    }
+
+    fn interruptHandler() callconv(.Naked) void {
+        // interrupt handler will be called in arm mode so we need to switch to thumb mode
+        asm volatile (
+            \\.arm
+            \\.cpu arm7tdmi
+            \\adr r0, thumb_handler+1
+            \\bx r0
+            \\thumb_handler:
+        );
+
+        var ie: u16 = GBA.REG_IE.*;
+        var ieif: u16 = ie & GBA.REG_IF.*;
+
+        GBA.REG_IF.* = ieif;
+        GBA.REG_IF_BIOS.* |= ieif;
+    }
 };
 
 export fn GBAMain() linksection(".gbamain") callconv(.Naked) noreturn {
@@ -291,6 +324,8 @@ fn GBAZigStartup() noreturn {
 
     // Copy .data section to EWRAM
     GBA.memcpy32(@ptrCast([*]volatile u8, &__data_start__), @ptrCast([*]const u8, &__data_lma), @ptrToInt(&__data_end__) - @ptrToInt(&__data_start__));
+
+    GBA.registerVBlankISR();
 
     // call user's main
     if (@hasDecl(root, "main")) {

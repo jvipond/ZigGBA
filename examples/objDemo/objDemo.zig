@@ -2,6 +2,7 @@ const GBA = @import("gba").GBA;
 const Input = @import("gba").Input;
 const LCD = @import("gba").LCD;
 const OAM = @import("gba").OAM;
+const BIOS = @import("gba").BIOS;
 
 export var gameHeader linksection(".gbaheader") = GBA.Header.setup("OBJDEMO", "AODE", "00", 0);
 
@@ -35,8 +36,6 @@ pub fn main() noreturn {
     var tileIndex: i32 = 0;
 
     while (true) {
-        LCD.naiveVSync();
-
         Input.readInput();
 
         x += Input.getHorizontal() * 2;
@@ -58,6 +57,7 @@ pub fn main() noreturn {
         metroid.setPosition(x, y);
         metroid.setTileIndex(tileIndex);
 
+        BIOS.vblankWait();
         OAM.update(1);
     }
 }
