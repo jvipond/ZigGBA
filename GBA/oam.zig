@@ -170,7 +170,7 @@ pub const OAM = struct {
     pub fn update(count: usize) void {
         var index: usize = 0;
         while (index < count) : (index += 1) {
-            OAMAttribute[index] = attributeBuffer[index];
+            GBA.memcpy32(&OAMAttribute[index], &attributeBuffer[index], @sizeOf(Attribute));
         }
         currentAttribute = 0;
     }
