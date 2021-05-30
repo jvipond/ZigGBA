@@ -122,7 +122,12 @@ pub const BIOS = struct {
     }
 
     pub fn vblankWait() callconv(.Inline) void {
-        systemCall0(5);
+        const assembly = comptime getSystemCallAssemblyCode(5);
+        asm volatile (assembly
+            :
+            :
+            : "r0", "r1"
+        );
     }
 
     // TODO: div when Zig supports multiple return value in inline assembly https://github.com/ziglang/zig/issues/215
