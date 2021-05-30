@@ -42,7 +42,7 @@
             "type": "shell",
             "dependsOn": ["Build GDB (Debug)"],
             "windows": {
-                "command": "C:\\mGBA\\mGBA.exe -g zig-cache/bin/${fileBasenameNoExtension};sleep 0;echo debuggerReady"
+                "command": "C:\\mGBA\\mGBA.exe -g zig-out/bin/${fileBasenameNoExtension};sleep 0;echo debuggerReady"
             },
             "presentation": {
                 "clear": true,
@@ -57,7 +57,7 @@
             "type": "shell",
             "dependsOn": ["Build GDB (Release)"],
             "windows": {
-                "command": "C:\\mGBA\\mGBA.exe -g zig-cache/bin/${fileBasenameNoExtension};sleep 0;echo debuggerReady"
+                "command": "C:\\mGBA\\mGBA.exe -g zig-out/bin/${fileBasenameNoExtension};sleep 0;echo debuggerReady"
             },
             "presentation": {
                 "clear": true,
@@ -72,7 +72,7 @@
             "type": "shell",
             "dependsOn": ["Build (Debug)"],
             "windows": {
-                "command": "C:\\mGBA\\mGBA.exe zig-cache/bin/${fileBasenameNoExtension}.gba"
+                "command": "C:\\mGBA\\mGBA.exe zig-out/bin/${fileBasenameNoExtension}.gba"
             },
             "presentation": {
                 "clear": true,
@@ -87,7 +87,7 @@
             "type": "shell",
             "dependsOn": ["Build (Release)"],
             "windows": {
-                "command": "C:\\mGBA\\mGBA.exe zig-cache/bin/${fileBasenameNoExtension}.gba;sleep 0;echo debuggerReady"
+                "command": "C:\\mGBA\\mGBA.exe zig-out/bin/${fileBasenameNoExtension}.gba;sleep 0;echo debuggerReady"
             },
             "presentation": {
                 "clear": true,

@@ -11,7 +11,7 @@
             "stopAtEntry": true,
             "MIMode": "gdb",
             "externalConsole": true,
-            "program": "${workspaceFolder}/zig-cache/bin/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}",
             "serverLaunchTimeout": 10000,
             "cwd": "${workspaceRoot}",
             "preLaunchTask": "gdbDebugRun",
@@ -24,7 +24,7 @@
                     {
                     "description": "Enable pretty-printing for gdb",
                     "ignoreFailures": true,
-                        "text": "file ${workspaceFolder}/zig-cache/bin/${fileBasenameNoExtension} -enable-pretty-printing"
+                        "text": "file ${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension} -enable-pretty-printing"
                     }]
             },
         },
@@ -35,7 +35,7 @@
             "stopAtEntry": true,
             "MIMode": "gdb",
             "externalConsole": true,
-            "program": "${workspaceFolder}/zig-cache/bin/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}",
             "serverLaunchTimeout": 10000,
             "cwd": "${workspaceRoot}",
             "preLaunchTask": "gdbReleaseRun",
@@ -48,7 +48,7 @@
                     {
                     "description": "Enable pretty-printing for gdb",
                     "ignoreFailures": true,
-                        "text": "file ${workspaceFolder}/zig-cache/bin/${fileBasenameNoExtension} -enable-pretty-printing"
+                        "text": "file ${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension} -enable-pretty-printing"
                     }]
             },
         }
