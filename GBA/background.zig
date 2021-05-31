@@ -29,17 +29,14 @@ pub const Background = struct {
     }
 
     pub const Scroll = packed struct {
-        x: u9 = 0,
-        dummy: u7 = 0,
-        y: u9 = 0,
-        dummy2: u7 = 0,
+        x: i16 = 0,
+        y: i16 = 0,
 
         const Self = @This();
-        pub fn setPosition(self: *volatile Self, x: i32, y: i32) callconv(.Inline) void {
+        pub fn setPosition(self: *volatile Self, xPos: i32, yPos: i32) callconv(.Inline) void {
             @setRuntimeSafety(false);
-            const Mask = (1 << 9) - 1;
-            self.x = @intCast(u9, x & Mask);
-            self.y = @intCast(u9, y & Mask);
+            self.x = @intCast(i16, xPos);
+            self.y = @intCast(i16, yPos);
         }
     };
 
