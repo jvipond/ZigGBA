@@ -24,16 +24,12 @@ pub fn main() noreturn {
 
     loadSpriteData();
 
-    var metroid: *OAM.Attribute = OAM.allocate();
-    metroid.x = 100;
-    metroid.y = 150;
-    metroid.palette = 0;
-    metroid.tileIndex = 0;
-    metroid.setSize(.Size64x64);
-
     var x: i32 = 96;
     var y: i32 = 32;
-    var tileIndex: i32 = 0;
+    var horizontal_flip: u1 = 0;
+    var vertical_flip: u1 = 0;
+    var palette: i32 = 0;
+    var tile_index: i32 = 0;
 
     while (true) {
         Input.readInput();
@@ -41,23 +37,22 @@ pub fn main() noreturn {
         x += Input.getHorizontal() * 2;
         y += Input.getVertical() * 2;
 
-        tileIndex += Input.getShoulderJustPressed();
-
+        tile_index += Input.getShoulderJustPressed();
+ 
         if (Input.isKeyJustPressed(Input.Keys.A)) {
-            metroid.flip.horizontalFlip = ~metroid.flip.horizontalFlip;
+            horizontal_flip = ~horizontal_flip;
         }
         if (Input.isKeyJustPressed(Input.Keys.B)) {
-            metroid.flip.verticalFlip = ~metroid.flip.verticalFlip;
+            vertical_flip = ~vertical_flip;
         }
 
-        metroid.palette = if (Input.isKeyDown(Input.Keys.Select)) 1 else 0;
+        palette = if (Input.isKeyDown(Input.Keys.Select)) 1 else 0;
 
         LCD.changeObjVramCharacterMapping(if (Input.isKeyDown(Input.Keys.Start)) .TwoDimension else .OneDimension);
 
-        metroid.setPosition(x, y);
-        metroid.setTileIndex(tileIndex);
+        _ = OAM.addNormalSprite(tile_index, .Size64x64, palette, x, y, 0, horizontal_flip, vertical_flip);
 
         BIOS.vblankWait();
-        OAM.update(1);
+        OAM.update();
     }
 }

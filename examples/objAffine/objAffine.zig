@@ -4,6 +4,8 @@ const LCD = @import("gba").LCD;
 const OAM = @import("gba").OAM;
 const Debug = @import("gba").Debug;
 const Math = @import("gba").Math;
+const BIOS = @import("gba").BIOS;
+const AffineTransform = @import("gba").OAM.AffineTransform;
 
 export var gameHeader linksection(".gbaheader") = GBA.Header.setup("OBJAFFINE", "AODE", "00", 0);
 
@@ -24,29 +26,16 @@ pub fn main() noreturn {
     GBA.memcpy32(GBA.SPRITE_VRAM, &metr_boxTiles, metr_boxTiles.len * 4);
     GBA.memcpy32(GBA.OBJ_PALETTE_RAM, &metrPal, metrPal.len * 4);
 
-    const metroid = OAM.allocate();
-    metroid.setRotationParameterIndex(0);
-    metroid.setSize(.Size64x64);
-    metroid.rotationScaling = true;
-    metroid.palette = 0;
-    metroid.tileIndex = 0;
-    metroid.setPosition(96, 32);
-    metroid.getAffine().setIdentity();
-
-    const shadow_metroid = OAM.allocate();
-    shadow_metroid.setRotationParameterIndex(31);
-    shadow_metroid.setSize(.Size64x64);
-    shadow_metroid.rotationScaling = true;
-    shadow_metroid.palette = 1;
-    shadow_metroid.tileIndex = 0;
-    shadow_metroid.setPosition(96, 32);
-    shadow_metroid.getAffine().setIdentity();
-
-    OAM.update(2);
+    const metroid_transform = AffineTransform.identity();
+    const shadow_metroid_transform = AffineTransform.identity();
 
     while (true) {
-        LCD.naiveVSync();
-
         Input.readInput();
+
+        OAM.addAffineSprite(0, .Size64x64, 0, 96, 32, 0, 0, 0, metroid_transform, false);
+        OAM.addAffineSprite(0, .Size64x64, 1, 96, 64, 0, 0, 0, shadow_metroid_transform, false);
+
+        BIOS.vblankWait();
+        OAM.update();
     }
 }
