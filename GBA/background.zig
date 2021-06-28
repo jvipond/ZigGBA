@@ -11,7 +11,7 @@ pub const Background = struct {
         paletteMode: GBA.PaletteMode = .Color16,
         screenBaseBlock: u5 = 0,
         dummy2: u1 = 0,
-        screenSize: packed enum(u2) {
+        screenSize: enum(u2) {
             Text32x32,
             Text64x32,
             Text32x64,

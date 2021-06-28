@@ -100,7 +100,7 @@ pub const Math = struct {
                 left.raw = div(left, right).raw;
             }
 
-            pub const toInt = comptime if (isSigned) toIntSigned else toIntUnsigned;
+            pub const toInt = if (isSigned) toIntSigned else toIntUnsigned;
 
             fn toIntUnsigned(self: Self) AlignIntegerType {
                 return self.raw >> Shift;
@@ -121,7 +121,7 @@ pub const Math = struct {
     pub const FixedI19_8 = FixedPoint(true, 19, 8);
     pub const FixedU19_8 = FixedPoint(false, 19, 8);
 
-    pub const sin_lut: [512]i16 = comptime blk: {
+    pub const sin_lut: [512]i16 = blk: {
         @setEvalBranchQuota(10000);
         var result: [512]i16 = undefined;
 

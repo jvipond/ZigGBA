@@ -42,17 +42,17 @@ pub const BIOS = struct {
     pub const CpuSetArgs = packed struct {
         wordCount: u21,
         dummy: u3 = 0,
-        fixedSourceAddress: packed enum(u1) {
+        fixedSourceAddress: enum(u1) {
             Copy,
             Fill,
         },
-        dataSize: packed enum(u1) {
+        dataSize: enum(u1) {
             HalfWord,
             Word,
         },
     };
 
-    pub const CpuFastSetMode = packed enum(u1) {
+    pub const CpuFastSetMode = enum(u1) {
         Copy,
         Fill,
     };
