@@ -3,21 +3,22 @@ const builtin = std.builtin;
 const TypeInfo = builtin.TypeInfo;
 const alignForward = std.mem.alignForward;
 const pi = std.math.pi;
+const testing = std.testing;
 
 pub const Math = struct {
     pub fn FixedPoint(comptime isSigned: bool, comptime integral: comptime_int, comptime fractional: comptime_int) type {
         return packed struct {
             raw: RawType = undefined,
 
-            const SignedRawType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .is_signed = true, .bits = integral + fractional } });
-            const UnsignedRawType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .is_signed = false, .bits = integral + fractional } });
+            const SignedRawType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .signedness = .signed, .bits = integral + fractional } });
+            const UnsignedRawType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .signedness = .unsigned, .bits = integral + fractional } });
             const RawType = if (isSigned) SignedRawType else UnsignedRawType;
 
-            const SignedAlignIntegerType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .is_signed = true, .bits = alignForward(integral + fractional, 8) } });
-            const UnsignedAlignIntegerType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .is_signed = false, .bits = alignForward(integral + fractional, 8) } });
+            const SignedAlignIntegerType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .signedness = .signed, .bits = alignForward(integral + fractional, 8) } });
+            const UnsignedAlignIntegerType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .signedness = .unsigned, .bits = alignForward(integral + fractional, 8) } });
             const AlignIntegerType = if (isSigned) SignedAlignIntegerType else UnsignedAlignIntegerType;
 
-            const InputIntegerType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .is_signed = isSigned, .bits = integral } });
+            const InputIntegerType = @Type(TypeInfo{ .Int = TypeInfo.Int{ .signedness = if (isSigned) .signed else .unsigned, .bits = integral } });
 
             const MaxIntegerType = if (isSigned) i32 else u32;
 
@@ -155,3 +156,35 @@ pub const Math = struct {
         return @floatToInt(i32, input * ((1 << 16) / (std.math.tau)));
     }
 };
+
+test "signed addition" {
+    const signed = true;
+    const a = Math.FixedPoint(signed, 8, 8).fromF32(2.5);
+    const a_plus_a_result = a.add(a);
+    const a_plus_a_expected = Math.FixedPoint(signed, 8, 8).fromF32(5.0);
+    try testing.expectEqual(a_plus_a_result, a_plus_a_expected);
+}
+
+test "signed addition2" {
+    const signed = true;
+    const a = Math.FixedPoint(signed, 8, 8).fromInt(2);
+    const a_plus_a_result = a.add(a);
+    const a_plus_a_expected = Math.FixedPoint(signed, 8, 8).fromF32(4);
+    try testing.expectEqual(a_plus_a_result, a_plus_a_expected);
+}
+
+test "unsigned addition" {
+    const signed = false;
+    const a = Math.FixedPoint(signed, 8, 8).fromF32(2.5);
+    const a_plus_a_result = a.add(a);
+    const a_plus_a_expected = Math.FixedPoint(signed, 8, 8).fromF32(5.0);
+    try testing.expectEqual(a_plus_a_result, a_plus_a_expected);
+}
+
+test "unsigned addition2" {
+    const signed = false;
+    const a = Math.FixedPoint(signed, 8, 8).fromInt(2);
+    const a_plus_a_result = a.add(a);
+    const a_plus_a_expected = Math.FixedPoint(signed, 8, 8).fromF32(4);
+    try testing.expectEqual(a_plus_a_result, a_plus_a_expected);
+}
